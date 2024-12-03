@@ -4,6 +4,7 @@
 #include <bit>
 #include <cmath>
 #include <cstdint>
+#include <optional>
 
 bool rams_s_radix_sort_with_simple_merge_for_doubles_mpi::TestMPITaskParallel::pre_processing() {
   internal_order_test();
@@ -85,7 +86,7 @@ bool rams_s_radix_sort_with_simple_merge_for_doubles_mpi::TestMPITaskParallel::r
     }
     std::swap(local_input, local_result);
   }
-  if (histograms_count % 2 == 0) {
+  if constexpr (histograms_count % 2 == 0) {
     std::swap(local_input, local_result);
   }
 
