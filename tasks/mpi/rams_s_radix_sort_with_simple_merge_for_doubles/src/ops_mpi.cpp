@@ -58,10 +58,22 @@ bool rams_s_radix_sort_with_simple_merge_for_doubles_mpi::TestMPITaskParallel::r
 
   auto get_histogram_value = [&](size_t histogram_index, double item) -> auto & {
     const auto double_internal = std::bit_cast<uint64_t>(item);
-    return histograms[histogram_index]
-                     [((double_internal ^ (-(double_internal >> (bits_per_item - 1)) | (1ul << (bits_per_item - 1)))) >>
-                       (radix * histogram_index)) &
-                      histogram_mask];
+#ifdef _MSC_VER
+#pragma warning(push)
+#pragma warning(disable : 4146 4334)
+#else
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wshift-count-overflow"
+#endif
+    return histograms[histogram_index][((double_internal ^ (-(double_internal >> (bits_per_item - 1ul)) |
+                                                            (1ul << (bits_per_item - 1ul)))) >>
+                                        (radix * histogram_index)) &
+                                       histogram_mask];
+#ifdef _MSC_VER
+#pragma warning(pop)
+#else
+#pragma GCC diagnostic pop
+#endif
   };
 
   for (const auto item : local_input) {
