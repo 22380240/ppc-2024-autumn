@@ -58,7 +58,7 @@ bool rams_s_radix_sort_with_simple_merge_for_doubles_mpi::TestMPITaskParallel::r
 
   auto get_histogram_value = [&](size_t histogram_index, double item) -> auto & {
     const auto double_internal = std::bit_cast<uint64_t>(item);
-#if defined(_MSC_VER) && !defined(__llvm__)
+#if defined(_MSC_VER) && !defined(__clang__)
 #pragma warning(push)
 #pragma warning(disable : 4146 4334)
 #else
@@ -69,7 +69,7 @@ bool rams_s_radix_sort_with_simple_merge_for_doubles_mpi::TestMPITaskParallel::r
                                                             (1ul << (bits_per_item - 1ul)))) >>
                                         (radix * histogram_index)) &
                                        histogram_mask];
-#if defined(_MSC_VER) && !defined(__llvm__)
+#if defined(_MSC_VER) && !defined(__clang__)
 #pragma warning(pop)
 #else
 #pragma GCC diagnostic pop
