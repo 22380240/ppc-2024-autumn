@@ -36,19 +36,17 @@ bool rams_s_radix_sort_with_simple_merge_for_doubles_seq::TaskSequential::run() 
 #ifdef _MSC_VER
 #pragma warning(push)
 #pragma warning(disable : 4146 4334)
-#else
+#endif
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wshift-count-overflow"
-#endif
     return histograms[histogram_index][((double_internal ^ (-(double_internal >> (bits_per_item - 1ul)) |
                                                             (1ul << (bits_per_item - 1ul)))) >>
                                         (radix * histogram_index)) &
                                        histogram_mask];
 #ifdef _MSC_VER
 #pragma warning(pop)
-#else
-#pragma GCC diagnostic pop
 #endif
+#pragma GCC diagnostic pop
   };
 
   for (const auto item : input) {
