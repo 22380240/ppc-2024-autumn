@@ -60,10 +60,13 @@ bool nesterov_a_test_task_mpi::TestMPITaskSequential::post_processing() {
 bool nesterov_a_test_task_mpi::TestMPITaskParallel::pre_processing() {
   internal_order_test();
   unsigned int delta = 0;
+  int extra = 0;
   if (world.rank() == 0) {
     delta = taskData->inputs_count[0] / world.size();
+    extra = taskData->inputs_count[0] % world.size();
   }
   broadcast(world, delta, 0);
+  broadcast(world, extra, 0);
 
   if (world.rank() == 0) {
     // Init vectors
@@ -73,14 +76,14 @@ bool nesterov_a_test_task_mpi::TestMPITaskParallel::pre_processing() {
       input_[i] = tmp_ptr[i];
     }
     for (int proc = 1; proc < world.size(); proc++) {
-      world.send(proc, 0, input_.data() + proc * delta, delta);
+      world.send(proc, 0, input_.data() + proc * delta + std::min(proc, extra), delta + (proc < extra ? 1 : 0));
     }
   }
-  local_input_ = std::vector<int>(delta);
+  local_input_ = std::vector<int>(delta + (world.rank() < extra ? 1 : 0));
   if (world.rank() == 0) {
-    local_input_ = std::vector<int>(input_.begin(), input_.begin() + delta);
+    local_input_ = std::vector<int>(input_.begin(), input_.begin() + local_input_.size());
   } else {
-    world.recv(0, 0, local_input_.data(), delta);
+    world.recv(0, 0, local_input_.data(), local_input_.size());
   }
   // Init value for output
   res = 0;
