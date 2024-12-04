@@ -66,17 +66,15 @@ bool rams_s_radix_sort_with_simple_merge_for_doubles_mpi::TestMPITaskParallel::r
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wshift-count-overflow"
 #endif
-    const auto sh_l = (double_internal >> (bits_per_item - 1ul));
-    const auto sh_l_02 = (double_internal >> (bits_per_item - (size_t)1));
-    const auto sh_l_03(double_internal >> (size_t)(bits_per_item - (size_t)1));
+    const auto sh_l = (double_internal >> (bits_per_item - 1));
     const auto n_sh_l = -sh_l;
-    const auto sh_r = ((size_t)1 << (bits_per_item - (size_t)1));
+    const auto sh_r = ((size_t)1 << (bits_per_item - 1));
     const auto double_mask = (n_sh_l | sh_r);
     const auto xored_double = double_internal ^ double_mask;
     const auto shifted_double = (xored_double >> (radix * histogram_index));
     const auto shifted_with_mask = shifted_double & histogram_mask;
-    std::cout << "\nitem: " << item << "\nsh_l: " << std::bitset<64>(sh_l) << "\nsh_l_02: " << std::bitset<64>(sh_l_02)
-              << "\nsh_l_03: " << std::bitset<64>(sh_l_03) << "\n____________________________" << std::endl;
+    std::cout << "\nitem: " << item << "\nsh_l: " << std::bitset<64>(sh_l) << "\nsh_r: " << std::bitset<64>(sh_r)
+              << "\n____________________________" << std::endl;
     return histograms[histogram_index][shifted_with_mask];
 #if defined(_MSC_VER) && !defined(__clang__)
 #pragma warning(pop)

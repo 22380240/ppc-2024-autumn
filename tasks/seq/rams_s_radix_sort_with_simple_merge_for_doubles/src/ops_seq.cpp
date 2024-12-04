@@ -40,8 +40,8 @@ bool rams_s_radix_sort_with_simple_merge_for_doubles_seq::TaskSequential::run() 
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wshift-count-overflow"
 #endif
-    return histograms[histogram_index][((double_internal ^ (-(double_internal >> (bits_per_item - 1ul)) |
-                                                            (1ul << (bits_per_item - 1ul)))) >>
+    return histograms[histogram_index][((double_internal ^ (-(double_internal >> (bits_per_item - 1)) |
+                                                            ((size_t)1 << (bits_per_item - 1)))) >>
                                         (radix * histogram_index)) &
                                        histogram_mask];
 #if defined(_MSC_VER) && !defined(__clang__)
