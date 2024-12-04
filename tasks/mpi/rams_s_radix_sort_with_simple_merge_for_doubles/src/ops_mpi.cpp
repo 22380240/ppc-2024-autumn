@@ -65,10 +65,15 @@ bool rams_s_radix_sort_with_simple_merge_for_doubles_mpi::TestMPITaskParallel::r
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wshift-count-overflow"
 #endif
-    return histograms[histogram_index][((double_internal ^ (-(double_internal >> (bits_per_item - 1ul)) |
-                                                            (1ul << (bits_per_item - 1ul)))) >>
-                                        (radix * histogram_index)) &
-                                       histogram_mask];
+    const auto double_mask = (-(double_internal >> (bits_per_item - 1ul)) | (1ul << (bits_per_item - 1ul)));
+    const auto xored_double = double_internal ^ double_mask;
+    const auto shifted_double = (xored_double >> (radix * histogram_index));
+    const auto shifted_with_mask = shifted_double & histogram_mask;
+    std::cout << "histogram_index: " << histogram_index << "\nitem: " << item
+              << "\ndouble_internal: " << double_internal << "\ndouble_mask: " << double_mask
+              << "\nxored_double: " << xored_double << "\nshifted_double: " << shifted_double
+              << "\nshifted_with_mask: " << shifted_with_mask << "\n____________________________" << std::endl;
+    return histograms[histogram_index][shifted_with_mask];
 #if defined(_MSC_VER) && !defined(__clang__)
 #pragma warning(pop)
 #else
