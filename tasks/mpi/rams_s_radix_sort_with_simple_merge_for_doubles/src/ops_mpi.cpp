@@ -74,9 +74,9 @@ bool rams_s_radix_sort_with_simple_merge_for_doubles_mpi::TestMPITaskParallel::r
     const auto shifted_double = (xored_double >> (radix * histogram_index));
     const auto shifted_with_mask = shifted_double & histogram_mask;
     std::cout << "\nitem: " << item << "\nbits_per_item: " << bits_per_item << "\ndouble_mask: " << double_mask
-              << "\nsh_l: " << std::bitset<64>(sh_l) << "\nn_sh_l: " << std::bitset<64>(n_sh_l)
-              << "\nsh_r: " << std::bitset<64>(sh_r) << "\ndouble_mask: " << std::bitset<64>(double_mask)
-              << "\n____________________________" << std::endl;
+              << "\ndouble_internal: " << std::bitset<64>(double_internal) << "\nsh_l: " << std::bitset<64>(sh_l)
+              << "\nn_sh_l: " << std::bitset<64>(n_sh_l) << "\nsh_r: " << std::bitset<64>(sh_r)
+              << "\ndouble_mask: " << std::bitset<64>(double_mask) << "\n____________________________" << std::endl;
     return histograms[histogram_index][shifted_with_mask];
 #if defined(_MSC_VER) && !defined(__clang__)
 #pragma warning(pop)
