@@ -19,9 +19,45 @@ bool rams_s_gaussian_elimination_horizontally_seq::TaskSequential::pre_processin
 bool rams_s_gaussian_elimination_horizontally_seq::TaskSequential::validation() {
   internal_order_test();
 
-  return taskData->inputs_count[0] >= 0 && taskData->outputs_count[0] >= 0 &&
-         (taskData->inputs_count[0] % (taskData->outputs_count[0] + 1) == 0) &&
-         ((taskData->inputs_count[0] / (taskData->outputs_count[0] + 1)) >= taskData->outputs_count[0]);
+  if (taskData->inputs_count[0] < 0 || taskData->outputs_count[0] < 0 ||
+      (taskData->inputs_count[0] % (taskData->outputs_count[0] + 1) != 0) ||
+      ((taskData->inputs_count[0] / (taskData->outputs_count[0] + 1)) < taskData->outputs_count[0])) {
+    return false;
+  }
+
+  auto *input_data = reinterpret_cast<double *>(taskData->inputs[0]);
+  std::vector<double> local_matrix(input_data, input_data + taskData->inputs_count[0]);
+  int cols_count = taskData->outputs_count[0] + 1;
+  int rows_count = local_matrix.size() / cols_count;
+
+  std::vector<bool> used_rows(rows_count, false);
+  size_t rank = std::max(cols_count - 1, rows_count);
+  for (int col_idx = 0; col_idx < cols_count - 1; col_idx++) {
+    int row_idx = 0;
+    for (; row_idx < rows_count; row_idx++) {
+      if (!used_rows[row_idx] && local_matrix[row_idx * cols_count + col_idx] != 0) {
+        break;
+      }
+    }
+    if (row_idx == rows_count) {
+      rank--;
+      continue;
+    }
+    used_rows[row_idx] = true;
+    for (int c = 0; c < cols_count; c++) {
+      local_matrix[row_idx * cols_count + c] /= local_matrix[row_idx * cols_count + col_idx];
+    }
+    for (int r = 0; r < rows_count; r++) {
+      if (r != row_idx && local_matrix[r * cols_count + col_idx] != 0) {
+        for (int c = col_idx + 1; c < cols_count; c++) {
+          local_matrix[r * cols_count + c] -=
+              local_matrix[row_idx * cols_count + c] * local_matrix[r * cols_count + col_idx];
+        }
+      }
+    }
+  }
+
+  return rank >= taskData->outputs_count[0];
 }
 
 bool rams_s_gaussian_elimination_horizontally_seq::TaskSequential::run() {
